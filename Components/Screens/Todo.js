@@ -1,28 +1,47 @@
 import React from 'react';
 import firebase from '../../fb'
-import { List, Title } from 'react-native-paper';
+import { List} from 'react-native-paper';
+import Swipeout from 'react-native-swipeout'
 
+function Todo({doc}) {
+  const swipeSettings={
+    autoClose:true,
+   
+    right:[
+      {
+        onPress: () => {
+          deleted(doc.key)
+        },
+        text: 'Delete', type: 'delete'
+      }
+    ],
 
-function Todo({doc }) {
-    
+  };
+
   async function toggleComplete() {
     await firebase.database().ref('todos/').child(doc.key).update ({complete: !doc.val().complete})
     console.log(doc.key)
   }
 
+  function deleted(key){
+    firebase.database().ref(`todos/${key}`).remove()
+  }
+
   return (
-    <List.Item
-      title={doc.val().title}
-      onPress={() => toggleComplete() }
-      style={{
-        flex:1,
-      }} 
-      left={props => (
-        <List.Icon {...props} icon={doc.val().complete ? 'check' : 'cancel'} />
-        
-       
-      )}
-    />
+    <Swipeout {...swipeSettings} > 
+          <List.Item
+                title={doc.val().title}
+                description={doc.val().description}
+                onPress={() => toggleComplete() }
+                style={{
+                  flex:1,
+                }} 
+                left={props => (
+                  <List.Icon {...props} icon={doc.val().complete ? 'check' : 'cancel'} />
+                    )}
+          />
+    </Swipeout> 
+    
   );
 }
 
