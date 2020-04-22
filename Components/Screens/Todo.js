@@ -2,23 +2,24 @@ import React from 'react';
 import firebase from '../../fb'
 import { List, Title } from 'react-native-paper';
 
-function Todo({ id, title, complete }) {
+
+function Todo({doc }) {
     
   async function toggleComplete() {
-    await firebase.database().ref().child(id).update ({complete: !complete})
-    console.log(id)
+    await firebase.database().ref('todos/').child(doc.key).update ({complete: !doc.val().complete})
+    console.log(doc.key)
   }
 
   return (
     <List.Item
-      title={title}
-      onPress={() => toggleComplete()}
+      title={doc.val().title}
+      onPress={() => toggleComplete() }
       style={{
         flex:1,
-        
-      }}
+      }} 
       left={props => (
-        <List.Icon {...props} icon={complete ? 'check' : 'cancel'} />
+        <List.Icon {...props} icon={doc.val().complete ? 'check' : 'cancel'} />
+        
        
       )}
     />
